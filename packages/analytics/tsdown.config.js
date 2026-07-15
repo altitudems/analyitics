@@ -5,9 +5,6 @@ export default {
   dts: true,
   sourcemap: true,
   clean: true,
-  deps: {
-    neverBundle: ['uuid', 'bowser', '@medv/finder'],
-  },
   outExtensions: ({ format }) => ({
     js: format === 'cjs' ? '.cjs' : '.js',
   }),

@@ -39,16 +39,11 @@
     "typecheck": "tsc --noEmit",
     "release": "semantic-release"
   },
-  "dependencies": {
-    "@medv/finder": "^4.0.2",
-    "bowser": "^2.14.1",
-    "uuid": "^11.1.0"
-  },
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@types/node": "^22.15.32",
-    "jsdom": "^26.1.0",
+    "happy-dom": "^20.10.6",
     "semantic-release": "^24.2.5",
     "tsdown": "^0.22.8",
     "typescript": "~5.9.3",
