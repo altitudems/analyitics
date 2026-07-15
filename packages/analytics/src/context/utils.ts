@@ -7,7 +7,7 @@ export function getNetworkMbps(timings?: TimingInput[]): number {
   let mbpsSamples: number[] = []
 
   if (!timings) {
-    if (typeof window === undefined || !window.performance || !window.performance.getEntriesByType) return 0
+    if (typeof window === 'undefined' || !window.performance?.getEntriesByType) return 0
     mbpsSamples = window.performance
       .getEntriesByType('resource')
       .filter((r) => (r as PerformanceResourceTiming).transferSize && r.duration)
@@ -20,5 +20,7 @@ export function getNetworkMbps(timings?: TimingInput[]): number {
   } else {
     mbpsSamples = timings.filter((r) => r.size).map((r) => (r.size * 8) / ((r.end - r.start) / 1000) / 1000000)
   }
-  return Math.round(mbpsSamples.reduce((a, b) => a + b) / mbpsSamples.length)
+
+  if (mbpsSamples.length === 0) return 0
+  return Math.round(mbpsSamples.reduce((a, b) => a + b, 0) / mbpsSamples.length)
 }

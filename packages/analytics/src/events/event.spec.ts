@@ -90,10 +90,12 @@ describe('client.events', () => {
       expect(event.data.elementText).toBe('Btn Label')
     })
 
-    it('from a click event, returns element selector', (done) => {
+    it('from a click event, returns element selector', async () => {
       const el = document.getElementById('my-btn')
-      if (el) {
-        el.addEventListener('click', (e) => {
+      expect(el).toBeTruthy()
+
+      await new Promise<void>((resolve) => {
+        el!.addEventListener('click', (e) => {
           const event = eventFactory({
             label: 'User Performed Action',
             context: client.context,
@@ -102,12 +104,11 @@ describe('client.events', () => {
           })
 
           expect(event.data.elementSelector).toBe('#my-btn')
-
-          done()
+          resolve()
         })
 
-        el.click()
-      }
+        el!.click()
+      })
     })
 
     it('outputs allows label override', () => {

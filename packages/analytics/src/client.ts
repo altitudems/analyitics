@@ -111,11 +111,9 @@ export default function createClient(options?: { disableErrorWatching?: boolean 
   }
 
   if (document.readyState !== 'complete') {
-    // loading yet, wait for the event
     document.addEventListener('DOMContentLoaded', client.onLoad.bind(client))
   } else {
-    // DOM is ready!
-    client.onLoad.bind(client)
+    client.onLoad()
   }
 
   window.addEventListener('unload', client.onUnload.bind(client))
