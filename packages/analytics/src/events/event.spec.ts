@@ -1,5 +1,5 @@
-import { AnalyticsClient } from '../client'
 import { setupEnvironment } from '../../tests/unit/helpers/setup'
+import type { AnalyticsClient } from '../client'
 import { EventTypes, eventFactory } from '.'
 
 let client: AnalyticsClient
@@ -92,10 +92,12 @@ describe('client.events', () => {
 
     it('from a click event, returns element selector', async () => {
       const el = document.getElementById('my-btn')
-      expect(el).toBeTruthy()
+      if (!el) {
+        throw new Error('expected #my-btn to exist')
+      }
 
       await new Promise<void>((resolve) => {
-        el!.addEventListener('click', (e) => {
+        el.addEventListener('click', (e) => {
           const event = eventFactory({
             label: 'User Performed Action',
             context: client.context,
@@ -107,7 +109,7 @@ describe('client.events', () => {
           resolve()
         })
 
-        el!.click()
+        el.click()
       })
     })
 

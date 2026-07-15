@@ -1,5 +1,5 @@
-import { AnalyticsClient } from './client'
 import { setupEnvironment } from '../tests/unit/helpers/setup'
+import type { AnalyticsClient } from './client'
 import { EventTypes } from './events/index'
 
 describe('client', () => {

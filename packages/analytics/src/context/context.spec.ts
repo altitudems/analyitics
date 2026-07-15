@@ -1,5 +1,5 @@
-import { AnalyticsClient } from '../client'
-import { setupEnvironment, REFERRER } from '../../tests/unit/helpers/setup'
+import { REFERRER, setupEnvironment } from '../../tests/unit/helpers/setup'
+import type { AnalyticsClient } from '../client'
 import { getNetworkMbps } from './utils'
 
 let client: AnalyticsClient

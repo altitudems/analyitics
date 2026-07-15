@@ -1,5 +1,5 @@
-import { AnalyticsContext, getContext } from './context'
-import { AnalyticsEvent, AnalyticsEventData, EventTypes, eventFactory } from './events'
+import { type AnalyticsContext, getContext } from './context'
+import { type AnalyticsEvent, type AnalyticsEventData, EventTypes, eventFactory } from './events'
 
 export interface AnalyticsClient {
   context: AnalyticsContext
