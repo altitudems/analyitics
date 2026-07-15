@@ -1,14 +1,10 @@
 {
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "editor.formatOnSave": false,
   "[typescript]": {
     "editor.formatOnSave": false
   },
-  "conventionalCommits.scopes": [
-    "commit-hooks",
-    "release",
-    "client"
-  ]
+  "conventionalCommits.scopes": ["commit-hooks", "release", "client", "monorepo"]
 }

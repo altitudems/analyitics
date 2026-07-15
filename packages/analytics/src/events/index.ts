@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid'
-import finder from '@medv/finder'
+import { finder } from '@medv/finder'
 import { AnalyticsContext } from '../context'
 
 export enum EventTypes {
@@ -65,7 +65,10 @@ export function eventFactory(options: {
 
   // If element exists, record details about it
   if (element != null) {
-    event.data.elementSelector = finder(element)
+    event.data.elementSelector = finder(element, {
+      // Prefer stable id selectors (finder v4 defaults reject hyphenated ids)
+      idName: () => true,
+    })
     event.data.elementText = element.textContent ? element.textContent.trim() : ''
   }
 

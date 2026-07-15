@@ -1,4 +1,4 @@
-import * as Bowser from 'bowser'
+import Bowser from 'bowser'
 import { getNetworkMbps } from './utils'
 
 export interface AnalyticsContext {
@@ -80,11 +80,11 @@ export function getContext(): AnalyticsContext {
     domain,
     path: window.location.pathname,
     unique: !referrer.includes(domain),
-    browser: ua.getBrowserName(),
-    browserVersion: ua.getBrowserVersion(),
-    os: ua.getOSName(),
-    osVersion: ua.getOSVersion(),
-    platform: ua.getPlatformType(),
+    browser: ua.getBrowserName() || null,
+    browserVersion: ua.getBrowserVersion() || null,
+    os: ua.getOSName() || null,
+    osVersion: ua.getOSVersion() || null,
+    platform: ua.getPlatformType() || null,
     width: window.innerWidth,
     height: window.innerHeight,
     utmMedium: params.get('utm_medium'),

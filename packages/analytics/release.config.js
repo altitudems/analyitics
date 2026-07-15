@@ -1,11 +1,23 @@
-module.exports = {
-  branches: ['master', 'next'],
-
+/**
+ * @type {import('semantic-release').Options}
+ */
+export default {
+  branches: ['main', 'next'],
   plugins: [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
-    '@semantic-release/changelog',
-    '@semantic-release/npm',
+    [
+      '@semantic-release/changelog',
+      {
+        changelogFile: 'CHANGELOG.md',
+      },
+    ],
+    [
+      '@semantic-release/npm',
+      {
+        pkgRoot: '.',
+      },
+    ],
     [
       '@semantic-release/git',
       {
