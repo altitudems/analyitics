@@ -1,4 +1,4 @@
-import Bowser from 'bowser'
+import { parseUserAgent } from './user-agent'
 import { getNetworkMbps } from './utils'
 
 export interface AnalyticsContext {
@@ -20,55 +20,28 @@ export interface AnalyticsContext {
   /**
    * Think of this as a channel.
    * e.g. Social, Organic, Paid, Email, Affiliates
-   * @type {(string | null)}
-   * @memberof AnalyticsContext
    */
   utmMedium: string | null
   /**
    * An individual source within a medium.
-   * For example, Facebook would be one of the sources within
-   * your Social medium for any unpaid links that you post to
-   * Facebook. If you’re running a Facebook ad or spending money
-   * to promote a link, you’d want to label Facebook as a source
-   * within Paid. If you’re building a link for email,
-   * define which list that you’re sending the email to
-   * @type {(string | null)}
-   * @memberof AnalyticsContext
    */
   utmSource: string | null
   /**
    * The specific campaign that you’re running.
-   * Feel free to fill this in however it makes sense to you.
-   * Names that allow you to easily identify product launches,
-   * promotional campaigns, individual emails or posts, etc.
-   * @type {(string | null)}
-   * @memberof AnalyticsContext
    */
   utmCampaign: string | null
   /**
-   * If you have multiple links in the same campaign,
-   * like two links in the same email, you can fill in
-   * this value so you can differentiate them.
-   * For most marketers, this data is more detailed
-   * than they really need.
-   *
-   * @type {(string | null)}
-   * @memberof AnalyticsContext
+   * Differentiates multiple links in the same campaign.
    */
   utmContent: string | null
   /**
-   * Search term used in relationship to this
-   * action or page so you can track specific keywords
-   * for paid organic campaigns. Not used very often.
-   *
-   * @type {(string | null)}
-   * @memberof AnalyticsContext
+   * Search term used in relationship to this action or page.
    */
   utmTerm: string | null
 }
 
 export function getContext(): AnalyticsContext {
-  const ua = Bowser.getParser(window.navigator.userAgent)
+  const parsed = parseUserAgent()
   const params = new URLSearchParams(window.location.search.slice(1))
   const referrer = document.referrer
   const domain = window.location.hostname
@@ -80,11 +53,11 @@ export function getContext(): AnalyticsContext {
     domain,
     path: window.location.pathname,
     unique: !referrer.includes(domain),
-    browser: ua.getBrowserName() || null,
-    browserVersion: ua.getBrowserVersion() || null,
-    os: ua.getOSName() || null,
-    osVersion: ua.getOSVersion() || null,
-    platform: ua.getPlatformType() || null,
+    browser: parsed.browser,
+    browserVersion: parsed.browserVersion,
+    os: parsed.os,
+    osVersion: parsed.osVersion,
+    platform: parsed.platform,
     width: window.innerWidth,
     height: window.innerHeight,
     utmMedium: params.get('utm_medium'),
