@@ -1,6 +1,6 @@
-import { v4 as uuid } from 'uuid'
 import { finder } from '@medv/finder'
-import { AnalyticsContext } from '../context'
+import { v4 as uuid } from 'uuid'
+import type { AnalyticsContext } from '../context'
 
 export enum EventTypes {
   pageExit = 'pageExit',
@@ -60,7 +60,7 @@ export function eventFactory(options: {
     label: options.label || 'Event',
     type: options.type || EventTypes.event,
     data: {},
-    timestamp: options.timestamp || new Date().valueOf(),
+    timestamp: options.timestamp || Date.now(),
   }
 
   // If element exists, record details about it

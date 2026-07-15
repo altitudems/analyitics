@@ -21,17 +21,21 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "sideEffects": false,
   "scripts": {
-    "build": "vite build",
+    "build": "tsdown",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint src tests --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "release": "semantic-release"
   },
@@ -46,9 +50,9 @@
     "@types/node": "^22.15.32",
     "jsdom": "^26.1.0",
     "semantic-release": "^24.2.5",
+    "tsdown": "^0.22.8",
     "typescript": "~5.9.3",
-    "vite": "^6.3.5",
-    "vite-plugin-dts": "^4.5.4",
-    "vitest": "^3.2.4"
+    "unrun": "^0.3.1",
+    "vitest": "^4.1.10"
   }
 }
