@@ -2,20 +2,17 @@
   "name": "@altitudems/analytics",
   "version": "1.1.0",
   "description": "Browser analytics client for collecting page, click, action, and error events",
-  "type": "module",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/altitudems/analyitics.git",
     "directory": "packages/analytics"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/",
-    "access": "restricted"
-  },
   "files": [
     "dist"
   ],
+  "type": "module",
+  "sideEffects": false,
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -31,12 +28,13 @@
       }
     }
   },
-  "sideEffects": false,
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com/"
+  },
   "scripts": {
-    "build": "tsdown",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "typecheck": "tsc --noEmit",
+    "build": "vp pack",
+    "test": "vp test",
     "release": "semantic-release"
   },
   "devDependencies": {
@@ -45,9 +43,6 @@
     "@types/node": "^22.15.32",
     "happy-dom": "^20.10.6",
     "semantic-release": "^24.2.5",
-    "tsdown": "^0.22.8",
-    "typescript": "~5.9.3",
-    "unrun": "^0.3.1",
-    "vitest": "^4.1.10"
+    "typescript": "~5.9.3"
   }
 }
