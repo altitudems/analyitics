@@ -2,22 +2,21 @@
   "name": "analyitics",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@9.15.9",
-  "engines": {
-    "node": ">=20"
-  },
   "scripts": {
-    "build": "pnpm -r run build",
-    "test": "pnpm -r run test",
-    "test:watch": "pnpm --filter @altitudems/analytics test:watch",
-    "lint": "biome check .",
-    "lint:fix": "biome check --write .",
-    "format": "biome format --write .",
-    "typecheck": "pnpm -r run typecheck",
+    "check": "vp check",
+    "fmt": "vp fmt",
+    "lint": "vp check",
+    "test": "vp run -r test",
+    "build": "vp run -r build",
+    "ready": "vp check && vp run -r test && vp run -r build",
     "release": "pnpm --filter @altitudems/analytics release"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.4",
-    "typescript": "~5.9.3"
-  }
+    "typescript": "~5.9.3",
+    "vite-plus": "0.2.4"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "packageManager": "pnpm@9.15.9"
 }
