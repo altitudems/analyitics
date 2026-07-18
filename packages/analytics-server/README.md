@@ -28,6 +28,7 @@ registerIngest(app, {
 
 - `createIngestHandler` — framework-agnostic `Request` → `Response`
 - `parseIngestPayload` — deep validation (re-exported)
-- `MemoryStore` + `registerDemoRoutes` — local `/stats` + `/events` for demos
+- `MemoryStore` + `registerDemoRoutes` — local `/stats`, `/events`, and `/stream` (SSE) for demos
+- `seedHarborDemo` / `startHarborTraffic` — out-of-the-box busy dashboard data + live inserts
 
 Suggested columns: `id, type, event, timestamp, anonymous_id, user_id, session_id, properties jsonb, context jsonb, received_at`.

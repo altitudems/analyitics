@@ -11,7 +11,11 @@ export type {
   StoredEvent,
 } from './store'
 export { MemoryStore } from './memory-store'
+export type { MemoryStoreListener } from './memory-store'
 export { createIngestHandler } from './ingest'
 export type { IngestHandlerOptions } from './ingest'
 export { registerDemoRoutes, registerIngest } from './hono'
 export type { RegisterDemoRoutesOptions, RegisterIngestOptions } from './hono'
+export { buildHarborSeedEvents, seedHarborDemo } from './demo-seed'
+export { startHarborTraffic } from './demo-traffic'
+export type { HarborTrafficOptions } from './demo-traffic'

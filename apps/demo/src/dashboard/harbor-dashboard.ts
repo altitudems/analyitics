@@ -6,59 +6,168 @@ import './event-stream'
 import type { FeedEvent } from './event-stream'
 import type { RankItem } from './rank-list'
 
-interface EventsResponse {
+interface StreamSnapshot {
+  stats: AnalyticsStats
   events: StoredEvent[]
+}
+
+interface StreamBatch {
+  events: StoredEvent[]
+  stats: AnalyticsStats
 }
 
 export class HarborDashboard extends LitElement {
   static properties = {
     stats: { attribute: false },
     events: { attribute: false },
+    freshIds: { attribute: false },
     status: { type: String },
+    transport: { type: String },
     updatedAt: { type: String },
   }
 
   declare stats: AnalyticsStats | null
   declare events: StoredEvent[]
+  declare freshIds: Set<string>
   declare status: 'loading' | 'live' | 'offline'
+  declare transport: 'sse' | 'poll' | ''
   declare updatedAt: string
 
-  #timer: ReturnType<typeof setInterval> | null = null
+  #source: EventSource | null = null
+  #pollTimer: ReturnType<typeof setInterval> | null = null
+  #freshTimer: ReturnType<typeof setTimeout> | null = null
+  #seen = new Set<string>()
 
   constructor() {
     super()
     this.stats = null
     this.events = []
+    this.freshIds = new Set()
     this.status = 'loading'
+    this.transport = ''
     this.updatedAt = ''
   }
 
   connectedCallback(): void {
     super.connectedCallback()
-    void this.refresh()
-    this.#timer = setInterval(() => {
-      void this.refresh()
-    }, 2000)
+    this.#connectSse()
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback()
-    if (this.#timer) clearInterval(this.#timer)
-    this.#timer = null
+    this.#teardown()
   }
 
-  async refresh(): Promise<void> {
-    try {
-      const [statsRes, eventsRes] = await Promise.all([fetch('/stats'), fetch('/events')])
-      if (!statsRes.ok || !eventsRes.ok) throw new Error('bad response')
-      this.stats = (await statsRes.json()) as AnalyticsStats
-      const payload = (await eventsRes.json()) as EventsResponse
-      this.events = [...payload.events].reverse()
-      this.status = 'live'
-      this.updatedAt = new Date().toLocaleTimeString()
-    } catch {
-      this.status = 'offline'
+  #teardown(): void {
+    this.#source?.close()
+    this.#source = null
+    if (this.#pollTimer) clearInterval(this.#pollTimer)
+    this.#pollTimer = null
+    if (this.#freshTimer) clearTimeout(this.#freshTimer)
+    this.#freshTimer = null
+  }
+
+  #markLive(transport: 'sse' | 'poll'): void {
+    this.status = 'live'
+    this.transport = transport
+    this.updatedAt = new Date().toLocaleTimeString()
+  }
+
+  #applySnapshot(payload: StreamSnapshot): void {
+    this.stats = payload.stats
+    const newestFirst = [...payload.events].reverse()
+    this.events = newestFirst
+    this.#seen = new Set(newestFirst.map((e) => e.id))
+    this.#markLive('sse')
+  }
+
+  #applyBatch(payload: StreamBatch): void {
+    this.stats = payload.stats
+    const incoming = [...payload.events].reverse()
+    const fresh = new Set<string>()
+    const next = [...this.events]
+    for (const event of incoming) {
+      if (this.#seen.has(event.id)) continue
+      this.#seen.add(event.id)
+      fresh.add(event.id)
+      next.unshift(event)
     }
+    this.events = next.slice(0, 160)
+    if (fresh.size > 0) {
+      this.freshIds = fresh
+      if (this.#freshTimer) clearTimeout(this.#freshTimer)
+      this.#freshTimer = setTimeout(() => {
+        this.freshIds = new Set()
+      }, 1400)
+    }
+    this.#markLive('sse')
+  }
+
+  #connectSse(): void {
+    this.#teardown()
+    if (typeof EventSource === 'undefined') {
+      void this.#startPolling()
+      return
+    }
+
+    const source = new EventSource('/stream')
+    this.#source = source
+
+    source.addEventListener('snapshot', (ev) => {
+      try {
+        this.#applySnapshot(JSON.parse((ev as MessageEvent).data) as StreamSnapshot)
+      } catch {
+        this.status = 'offline'
+      }
+    })
+
+    source.addEventListener('batch', (ev) => {
+      try {
+        this.#applyBatch(JSON.parse((ev as MessageEvent).data) as StreamBatch)
+      } catch {
+        // ignore malformed
+      }
+    })
+
+    source.onerror = () => {
+      source.close()
+      this.#source = null
+      void this.#startPolling()
+    }
+  }
+
+  async #startPolling(): Promise<void> {
+    if (this.#pollTimer) return
+    const pull = async () => {
+      try {
+        const [statsRes, eventsRes] = await Promise.all([fetch('/stats'), fetch('/events')])
+        if (!statsRes.ok || !eventsRes.ok) throw new Error('bad response')
+        this.stats = (await statsRes.json()) as AnalyticsStats
+        const payload = (await eventsRes.json()) as { events: StoredEvent[] }
+        const newestFirst = [...payload.events].reverse()
+        const fresh = new Set<string>()
+        for (const event of newestFirst) {
+          if (this.#seen.size > 0 && !this.#seen.has(event.id)) fresh.add(event.id)
+          this.#seen.add(event.id)
+        }
+        this.events = newestFirst.slice(0, 160)
+        if (fresh.size > 0) {
+          this.freshIds = fresh
+          if (this.#freshTimer) clearTimeout(this.#freshTimer)
+          this.#freshTimer = setTimeout(() => {
+            this.freshIds = new Set()
+          }, 1400)
+        }
+        this.#markLive('poll')
+      } catch {
+        this.status = 'offline'
+        this.transport = ''
+      }
+    }
+    await pull()
+    this.#pollTimer = setInterval(() => {
+      void pull()
+    }, 2000)
   }
 
   static styles = css`
@@ -135,6 +244,7 @@ export class HarborDashboard extends LitElement {
     .dot[data-on='live'] {
       background: var(--accent);
       box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 20%, transparent);
+      animation: pulse 1.6s ease infinite;
     }
 
     .grid {
@@ -186,6 +296,16 @@ export class HarborDashboard extends LitElement {
         transform: none;
       }
     }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 18%, transparent);
+      }
+      50% {
+        box-shadow: 0 0 0 7px color-mix(in oklab, var(--accent) 8%, transparent);
+      }
+    }
   `
 
   render() {
@@ -210,23 +330,27 @@ export class HarborDashboard extends LitElement {
       app: e.context.app,
       path: typeof e.properties.path === 'string' ? e.properties.path : e.context.page.path,
       campaign: e.context.campaign.campaign || e.context.campaign.source,
+      fresh: this.freshIds.has(e.id),
     }))
+
+    const statusLabel =
+      this.status === 'live'
+        ? `${this.transport === 'sse' ? 'SSE' : 'Polling'} · ${this.updatedAt}`
+        : this.status === 'loading'
+          ? 'Connecting…'
+          : 'API offline'
 
     return html`
       <div class="shell">
         <header>
           <div>
             <h1 class="brand">Harbor</h1>
-            <p class="sub">Live analytics · first-party events</p>
+            <p class="sub">Live analytics · seeded history + realtime stream</p>
           </div>
           <div class="aside">
             <div>
               <span class="dot" data-on=${this.status}></span>
-              ${this.status === 'live'
-                ? `Live · ${this.updatedAt}`
-                : this.status === 'loading'
-                  ? 'Connecting…'
-                  : 'API offline'}
+              ${statusLabel}
             </div>
             <div>
               <a href="/">Marketing</a>
