@@ -1,0 +1,44 @@
+{
+  "name": "@altitudems/analytics",
+  "version": "2.1.0",
+  "description": "First-party browser analytics: capture, pageviews, campaign attribution, and batched ingest — not a PostHog/OTel replacement",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/altitudems/analyitics.git",
+    "directory": "packages/analytics"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "test": "vp test",
+    "release": "semantic-release"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@types/node": "^22.15.32",
+    "happy-dom": "^20.10.6",
+    "semantic-release": "^24.2.5",
+    "typescript": "~5.9.3"
+  }
+}

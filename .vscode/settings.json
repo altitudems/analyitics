@@ -1,14 +1,17 @@
 {
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.oxc": "explicit"
   },
-  "editor.formatOnSave": false,
   "[typescript]": {
-    "editor.formatOnSave": false
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   },
-  "conventionalCommits.scopes": [
-    "commit-hooks",
-    "release",
-    "client"
-  ]
+  "[javascript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "conventionalCommits.scopes": ["commit-hooks", "release", "client", "monorepo"]
 }

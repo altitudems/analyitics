@@ -1,0 +1,51 @@
+{
+  "name": "@altitudems/analytics-server",
+  "version": "2.1.0",
+  "description": "First-party analytics ingest helpers — plug in your own store",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/altitudems/analyitics.git",
+    "directory": "packages/analytics-server"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "test": "vp test"
+  },
+  "dependencies": {
+    "@altitudems/analytics": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.32",
+    "hono": "^4.12.30",
+    "typescript": "~5.9.3"
+  },
+  "peerDependencies": {
+    "hono": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "hono": {
+      "optional": true
+    }
+  }
+}

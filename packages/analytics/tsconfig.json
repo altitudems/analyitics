@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist",
+    "types": ["vite-plus/test/globals"]
+  },
+  "include": ["src", "tests", "vite.config.ts"],
+  "exclude": ["dist", "node_modules"]
+}
