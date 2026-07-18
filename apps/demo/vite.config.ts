@@ -8,6 +8,10 @@ export default defineConfig({
       '/ingest': 'http://localhost:8787',
       '/stats': 'http://localhost:8787',
       '/events': 'http://localhost:8787',
+      '/stream': {
+        target: 'http://localhost:8787',
+        changeOrigin: true,
+      },
       '/health': 'http://localhost:8787',
     },
   },

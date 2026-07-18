@@ -14,6 +14,8 @@ pnpm dev
 | Dashboard | http://localhost:5173/dashboard.html |
 | API       | http://localhost:8787                |
 
+Open the dashboard first — it boots with seeded history and an SSE live feed.
+
 ```ts
 // browser
 import { createAnalytics } from '@altitudems/analytics'

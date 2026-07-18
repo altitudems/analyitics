@@ -1,18 +1,35 @@
 import type { AnalyticsEvent } from '@altitudems/analytics'
 import type { AnalyticsReadableStore, AnalyticsStats, CampaignStat, IngestMeta, PageStat, StoredEvent } from './store'
 
+export type MemoryStoreListener = (added: StoredEvent[], stats: AnalyticsStats) => void
+
 /** In-memory store for tests and local demos. Swap for your DB in production. */
 export class MemoryStore implements AnalyticsReadableStore {
   readonly events: StoredEvent[] = []
+  readonly #listeners = new Set<MemoryStoreListener>()
 
   async insert(events: AnalyticsEvent[], meta: IngestMeta): Promise<void> {
+    const added: StoredEvent[] = []
     for (const event of events) {
-      this.events.push({
+      const row: StoredEvent = {
         ...event,
         receivedAt: meta.receivedAt,
         writeKey: meta.writeKey,
         sdk: meta.sdk,
-      })
+      }
+      this.events.push(row)
+      added.push(row)
+    }
+    if (added.length === 0) return
+    const stats = this.stats()
+    for (const listener of this.#listeners) listener(added, stats)
+  }
+
+  /** Notify on every successful insert. Returns unsubscribe. */
+  subscribe(listener: MemoryStoreListener): () => void {
+    this.#listeners.add(listener)
+    return () => {
+      this.#listeners.delete(listener)
     }
   }
 

@@ -12,6 +12,7 @@ export interface FeedEvent {
   app: string | null
   path: string | null
   campaign: string | null
+  fresh?: boolean
 }
 
 export class EventStream extends LitElement {
@@ -57,6 +58,10 @@ export class EventStream extends LitElement {
       border-top: 1px solid color-mix(in oklab, var(--line) 75%, transparent);
       animation: in 280ms ease both;
     }
+    .item[data-fresh='true'] {
+      background: color-mix(in oklab, var(--accent) 12%, transparent);
+      animation: flash 900ms ease both;
+    }
     .time {
       font-family: var(--font-mono);
       font-size: 0.72rem;
@@ -98,6 +103,16 @@ export class EventStream extends LitElement {
         transform: none;
       }
     }
+    @keyframes flash {
+      from {
+        background: color-mix(in oklab, var(--accent) 22%, transparent);
+        transform: translateY(-4px);
+      }
+      to {
+        background: transparent;
+        transform: none;
+      }
+    }
   `
 
   render() {
@@ -110,7 +125,7 @@ export class EventStream extends LitElement {
           rows,
           (e) => e.id,
           (e) => html`
-            <article class="item">
+            <article class="item" data-fresh=${e.fresh ? 'true' : 'false'}>
               <div class="time">${formatTime(e.timestamp)}</div>
               <div>
                 <div class="title">
