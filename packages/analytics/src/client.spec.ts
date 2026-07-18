@@ -114,9 +114,7 @@ describe('createAnalytics', () => {
     expect(calls.length).toBeGreaterThan(afterInit)
     const body = bodyOf(calls[calls.length - 1]?.init)
     const pages = body.batch.filter((e) => e.type === 'page')
-    expect(pages.some((p) => typeof p.properties.hash === 'string' && p.properties.hash.includes('pricing'))).toBe(
-      true,
-    )
+    expect(pages.some((p) => typeof p.properties.hash === 'string' && p.properties.hash.includes('pricing'))).toBe(true)
     analytics.destroy()
   })
 
