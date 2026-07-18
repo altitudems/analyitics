@@ -17,7 +17,10 @@ root.innerHTML = `
     <div class="hero-grain" aria-hidden="true"></div>
     <nav class="nav">
       <span aria-hidden="true"></span>
-      <a href="/app.html">Open app</a>
+      <div class="nav-links">
+        <a href="/dashboard.html">Dashboard</a>
+        <a href="/app.html">Open app</a>
+      </div>
     </nav>
     <h1 class="hero-brand">Harbor</h1>
     <div class="hero-foot">

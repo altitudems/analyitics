@@ -7,11 +7,12 @@ pnpm install
 pnpm dev
 ```
 
-|           |                                |
-| --------- | ------------------------------ |
-| Marketing | http://localhost:5173          |
-| App       | http://localhost:5173/app.html |
-| API       | http://localhost:8787          |
+|           |                                      |
+| --------- | ------------------------------------ |
+| Marketing | http://localhost:5173                |
+| App       | http://localhost:5173/app.html       |
+| Dashboard | http://localhost:5173/dashboard.html |
+| API       | http://localhost:8787                |
 
 ```ts
 // browser

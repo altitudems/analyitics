@@ -15,5 +15,5 @@
 packages/analytics         # browser SDK
 packages/analytics-server  # store interface + ingest
 apps/api                   # Hono example
-apps/demo                  # marketing + app (same origin)
+apps/demo                  # marketing + app + Lit dashboard (same origin)
 ```
