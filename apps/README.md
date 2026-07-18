@@ -1,30 +1,42 @@
 # Examples
 
-## Run the full demo
+## Full demo (same-origin funnel)
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-- Marketing site: http://localhost:5173
-- Fake app: http://localhost:5174
-- Ingest API: http://localhost:8787
+| Surface   | URL                            |
+| --------- | ------------------------------ |
+| Marketing | http://localhost:5173          |
+| App       | http://localhost:5173/app.html |
+| API       | http://localhost:8787          |
 
-Try a campaign link:
+Vite proxies `/ingest`, `/stats`, and `/events` to the API — so marketing and app share **one origin**, one anonymous id, one campaign cookie jar.
 
-http://localhost:5173/?utm_source=twitter&utm_medium=social&utm_campaign=launch
+### Happy path
 
-Then open the app, click actions, and hit **Refresh stats** (or `GET http://localhost:8787/stats`).
+1. Open http://localhost:5173/?utm_source=twitter&utm_medium=social&utm_campaign=launch
+2. Click **Start free** → lands in the app with the same visitor id
+3. **Sign in as Alex** → identify stitches the funnel
+4. Switch Releases ↔ Settings → SPA pageviews
+5. Watch live stats update
 
-## Packages used
+## Wire your own backend
 
-| Package                         | Role                                            |
-| ------------------------------- | ----------------------------------------------- |
-| `@altitudems/analytics`         | Browser SDK                                     |
-| `@altitudems/analytics-server`  | `AnalyticsStore` + ingest handler (Hono helper) |
-| `@altitudems/example-api`       | Hono + `MemoryStore`                            |
-| `@altitudems/example-marketing` | Harbor marketing page                           |
-| `@altitudems/example-app`       | Fake signed-in product shell                    |
+```ts
+import { Hono } from 'hono'
+import { registerIngest, type AnalyticsStore } from '@altitudems/analytics-server'
 
-Wire your own DB by implementing `AnalyticsStore.insert` and passing it to `createIngestHandler` / `registerIngest`.
+const store: AnalyticsStore = {
+  async insert(events, meta) {
+    // persist to Postgres / ClickHouse / …
+  },
+}
+
+const app = new Hono()
+registerIngest(app, { store, writeKey: process.env.ANALYTICS_WRITE_KEY })
+```
+
+`MemoryStore` is for demos only.

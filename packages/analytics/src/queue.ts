@@ -6,9 +6,13 @@ const QUEUE_KEY = 'queue'
 export class EventQueue {
   private memory: AnalyticsEvent[] = []
 
-  constructor(private readonly persist: boolean) {
+  constructor(
+    private readonly persist: boolean,
+    private readonly maxSize: number,
+  ) {
     if (persist) {
       this.memory = storageGetJson<AnalyticsEvent[]>(QUEUE_KEY) ?? []
+      this.trim()
     }
   }
 
@@ -16,31 +20,34 @@ export class EventQueue {
     return this.memory.length
   }
 
-  peekAll(): AnalyticsEvent[] {
-    return [...this.memory]
-  }
-
   enqueue(event: AnalyticsEvent): void {
     this.memory.push(event)
+    this.trim()
     this.save()
   }
 
-  /** Remove and return up to `count` events from the front. */
+  /** Take up to `count` events from the front. */
   dequeue(count: number): AnalyticsEvent[] {
-    const batch = this.memory.splice(0, count)
+    const batch = this.memory.splice(0, Math.max(0, count))
     this.save()
     return batch
   }
 
-  /** Put events back at the front (after a failed send). */
   requeue(events: AnalyticsEvent[]): void {
     this.memory = [...events, ...this.memory]
+    this.trim()
     this.save()
   }
 
   clear(): void {
     this.memory = []
     this.save()
+  }
+
+  private trim(): void {
+    if (this.memory.length <= this.maxSize) return
+    // Drop oldest so the queue cannot grow without bound
+    this.memory = this.memory.slice(this.memory.length - this.maxSize)
   }
 
   private save(): void {

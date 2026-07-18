@@ -1,6 +1,6 @@
 {
   "name": "@altitudems/analytics-server",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "First-party analytics ingest helpers — plug in your own store",
   "license": "MIT",
   "repository": {

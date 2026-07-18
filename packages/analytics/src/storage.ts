@@ -14,7 +14,7 @@ export function storageSet(key: string, value: string): void {
     if (typeof localStorage === 'undefined') return
     localStorage.setItem(PREFIX + key, value)
   } catch {
-    // private mode / quota — ignore
+    // private mode / quota
   }
 }
 
@@ -39,4 +39,22 @@ export function storageGetJson<T>(key: string): T | null {
 
 export function storageSetJson(key: string, value: unknown): void {
   storageSet(key, JSON.stringify(value))
+}
+
+export function sessionGet(key: string): string | null {
+  try {
+    if (typeof sessionStorage === 'undefined') return null
+    return sessionStorage.getItem(PREFIX + key)
+  } catch {
+    return null
+  }
+}
+
+export function sessionSet(key: string, value: string): void {
+  try {
+    if (typeof sessionStorage === 'undefined') return
+    sessionStorage.setItem(PREFIX + key, value)
+  } catch {
+    // ignore
+  }
 }
