@@ -100,6 +100,8 @@ function render(): void {
         <div class="top-meta">
           <a href="/">Marketing</a>
           <span>·</span>
+          <a href="/dashboard.html">Dashboard</a>
+          <span>·</span>
           <span>Demo app</span>
         </div>
       </header>

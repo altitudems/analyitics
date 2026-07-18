@@ -7,11 +7,12 @@ pnpm install
 pnpm dev
 ```
 
-| Surface   | URL                            |
-| --------- | ------------------------------ |
-| Marketing | http://localhost:5173          |
-| App       | http://localhost:5173/app.html |
-| API       | http://localhost:8787          |
+| Surface   | URL                                  |
+| --------- | ------------------------------------ |
+| Marketing | http://localhost:5173                |
+| App       | http://localhost:5173/app.html       |
+| Dashboard | http://localhost:5173/dashboard.html |
+| API       | http://localhost:8787                |
 
 Vite proxies `/ingest`, `/stats`, and `/events` to the API — so marketing and app share **one origin**, one anonymous id, one campaign cookie jar.
 
@@ -21,7 +22,10 @@ Vite proxies `/ingest`, `/stats`, and `/events` to the API — so marketing and 
 2. Click **Start free** → lands in the app with the same visitor id
 3. **Sign in as Alex** → identify stitches the funnel
 4. Switch Releases ↔ Settings → SPA pageviews
-5. Watch live stats update
+5. Open the Lit dashboard → live tiles, rankings, and event feed
+6. Watch live stats update
+
+The dashboard is Lit web components (`harbor-dashboard`, `stat-tile`, `rank-list`, `event-stream`) polling the demo API’s `/stats` and `/events`.
 
 ## Wire your own backend
 
