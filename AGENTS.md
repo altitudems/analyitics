@@ -12,3 +12,11 @@ This project uses Vite+ (`vp`) for check, format, lint, test, and library pack.
 Docs: https://viteplus.dev/guide/
 
 <!--VITE PLUS END-->
+
+# Package: `@altitudems/analytics`
+
+First-party browser analytics (product + marketing). Not PostHog, not OTel.
+
+- `createAnalytics({ endpoint })` → `capture` / `page` / `identify` / `flush`
+- Batches to your ingest URL as `IngestPayload` (`schemaVersion: 1`)
+- First-touch UTMs, anonymous id, optional identify

@@ -1,12 +1,11 @@
 /**
- * Create a unique event id using the Web Crypto API when available.
+ * Create a unique id using the Web Crypto API when available.
  */
 export function createId(): string {
   if (typeof globalThis.crypto?.randomUUID === 'function') {
     return globalThis.crypto.randomUUID()
   }
 
-  // Fallback for environments without randomUUID (very old browsers / odd test hosts)
   const bytes = new Uint8Array(16)
   if (typeof globalThis.crypto?.getRandomValues === 'function') {
     globalThis.crypto.getRandomValues(bytes)

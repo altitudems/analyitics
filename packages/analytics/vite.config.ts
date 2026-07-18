@@ -15,10 +15,10 @@ export default defineConfig({
     environment: 'happy-dom',
     environmentOptions: {
       happyDOM: {
-        url: 'https://www.website.com/test.html',
+        url: 'https://www.example.com/',
       },
     },
-    include: ['src/**/*.{spec,test}.ts', 'tests/**/*.{spec,test}.ts'],
+    include: ['src/**/*.{spec,test}.ts'],
     globals: true,
   },
 })
