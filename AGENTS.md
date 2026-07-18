@@ -6,17 +6,28 @@ This project uses Vite+ (`vp`) for check, format, lint, test, and library pack.
 
 - `vp check` — format (Oxfmt), lint (Oxlint), and type-check
 - `vp fmt` — format only
-- `vp test` / `vp run -r test` — Vitest
-- `vp pack` / `vp run -r build` — tsdown library build
+- `vp test` / `vp run … test` — Vitest
+- `vp pack` / `vp run … build` — library build
 
 Docs: https://viteplus.dev/guide/
 
 <!--VITE PLUS END-->
 
-# Package: `@altitudems/analytics`
+# Layout
 
-First-party browser analytics (product + marketing). Not PostHog, not OTel.
+```
+packages/analytics         # browser SDK
+packages/analytics-server  # AnalyticsStore + ingest (Hono helper)
+apps/api                   # example Hono + MemoryStore
+apps/marketing             # Harbor marketing site
+apps/app                   # fake product shell
+```
 
-- `createAnalytics({ endpoint })` → `capture` / `page` / `identify` / `flush`
-- Batches to your ingest URL as `IngestPayload` (`schemaVersion: 1`)
-- First-touch UTMs, anonymous id, optional identify
+## Demo
+
+```bash
+pnpm install
+pnpm dev
+```
+
+See `apps/README.md`.

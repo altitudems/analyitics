@@ -1,12 +1,12 @@
 {
-  "name": "@altitudems/analytics",
+  "name": "@altitudems/analytics-server",
   "version": "2.0.0",
-  "description": "First-party browser analytics: capture, pageviews, campaign attribution, and batched ingest — not a PostHog/OTel replacement",
+  "description": "First-party analytics ingest helpers — plug in your own store",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/altitudems/analyitics.git",
-    "directory": "packages/analytics"
+    "directory": "packages/analytics-server"
   },
   "files": [
     "dist",
@@ -30,15 +30,22 @@
   },
   "scripts": {
     "build": "vp pack",
-    "test": "vp test",
-    "release": "semantic-release"
+    "test": "vp test"
+  },
+  "dependencies": {
+    "@altitudems/analytics": "workspace:*"
   },
   "devDependencies": {
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/git": "^10.0.1",
     "@types/node": "^22.15.32",
-    "happy-dom": "^20.10.6",
-    "semantic-release": "^24.2.5",
+    "hono": "^4.12.30",
     "typescript": "~5.9.3"
+  },
+  "peerDependencies": {
+    "hono": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "hono": {
+      "optional": true
+    }
   }
 }

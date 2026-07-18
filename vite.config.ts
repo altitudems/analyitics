@@ -3,7 +3,7 @@ import { defineConfig } from 'vite-plus'
 export default defineConfig({
   lint: {
     plugins: ['typescript'],
-    ignorePatterns: ['**/dist/**', '**/coverage/**', '**/node_modules/**'],
+    ignorePatterns: ['**/dist/**', '**/coverage/**', '**/node_modules/**', 'apps/**/dist/**'],
     options: {
       typeAware: true,
       typeCheck: true,

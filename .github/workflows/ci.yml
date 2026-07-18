@@ -32,7 +32,7 @@ jobs:
         run: pnpm exec vp check
 
       - name: Test
-        run: pnpm exec vp run -r test
+        run: pnpm test
 
       - name: Build
-        run: pnpm exec vp run -r build
+        run: pnpm build

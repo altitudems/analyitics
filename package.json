@@ -6,9 +6,13 @@
     "check": "vp check",
     "fmt": "vp fmt",
     "lint": "vp check",
-    "test": "vp run -r test",
-    "build": "vp run -r build",
-    "ready": "vp check && vp run -r test && vp run -r build",
+    "test": "vp run --filter @altitudems/analytics --filter @altitudems/analytics-server test",
+    "build": "vp run --filter @altitudems/analytics --filter @altitudems/analytics-server build",
+    "dev:api": "vp run --filter @altitudems/example-api dev",
+    "dev:marketing": "vp run --filter @altitudems/example-marketing dev",
+    "dev:app": "vp run --filter @altitudems/example-app dev",
+    "dev": "vp run --parallel --filter @altitudems/example-api --filter @altitudems/example-marketing --filter @altitudems/example-app dev",
+    "ready": "vp check && pnpm test && pnpm build",
     "release": "pnpm --filter @altitudems/analytics release"
   },
   "devDependencies": {

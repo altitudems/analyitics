@@ -1,0 +1,17 @@
+{
+  "name": "@altitudems/example-marketing",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev --port 5173",
+    "build": "vp build",
+    "preview": "vp preview"
+  },
+  "dependencies": {
+    "@altitudems/analytics": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3"
+  }
+}

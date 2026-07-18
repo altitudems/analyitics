@@ -1,0 +1,21 @@
+{
+  "name": "@altitudems/example-api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "build": "echo \"api is run with tsx\""
+  },
+  "dependencies": {
+    "@altitudems/analytics-server": "workspace:*",
+    "@hono/node-server": "^2.0.10",
+    "hono": "^4.12.30"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.32",
+    "tsx": "^4.20.3",
+    "typescript": "~5.9.3"
+  }
+}
