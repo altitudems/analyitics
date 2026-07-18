@@ -1,0 +1,17 @@
+{
+  "name": "@altitudems/example-app",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev --port 5174",
+    "build": "vp build",
+    "preview": "vp preview"
+  },
+  "dependencies": {
+    "@altitudems/analytics": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3"
+  }
+}
