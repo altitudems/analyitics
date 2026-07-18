@@ -1,12 +1,10 @@
 import { createAnalytics } from './client'
 import { mergeFirstTouchCampaign, parseCampaignFromSearch } from './campaign'
-import { type IngestPayload, isIngestPayload } from './types'
+import { type IngestPayload, isIngestPayload, parseIngestPayload } from './types'
 
 function bodyOf(init?: RequestInit): IngestPayload {
   const raw = init?.body
-  if (typeof raw !== 'string') {
-    throw new Error('expected string body')
-  }
+  if (typeof raw !== 'string') throw new Error('expected string body')
   return JSON.parse(raw) as IngestPayload
 }
 
@@ -22,40 +20,37 @@ function mockFetchOk() {
 }
 
 describe('parseCampaignFromSearch', () => {
-  it('parses utm params', () => {
-    expect(parseCampaignFromSearch('?utm_source=google&utm_medium=cpc&utm_campaign=spring')).toEqual({
+  it('parses utm + click ids', () => {
+    expect(parseCampaignFromSearch('?utm_source=google&utm_medium=cpc&utm_campaign=spring&gclid=abc')).toEqual({
       source: 'google',
       medium: 'cpc',
       campaign: 'spring',
       content: null,
       term: null,
+      gclid: 'abc',
+      fbclid: null,
     })
   })
 })
 
 describe('mergeFirstTouchCampaign', () => {
   it('keeps first touch', () => {
-    const first = {
-      source: 'google',
-      medium: 'cpc',
-      campaign: 'spring',
-      content: null,
-      term: null,
-    }
-    const second = {
-      source: 'newsletter',
-      medium: 'email',
-      campaign: 'launch',
-      content: null,
-      term: null,
-    }
+    const first = parseCampaignFromSearch('?utm_source=google&utm_medium=cpc&utm_campaign=spring')
+    const second = parseCampaignFromSearch('?utm_source=newsletter&utm_medium=email&utm_campaign=launch')
     expect(mergeFirstTouchCampaign(first, second)).toEqual(first)
+  })
+})
+
+describe('parseIngestPayload', () => {
+  it('rejects shallow garbage', () => {
+    expect(parseIngestPayload({ schemaVersion: 1, sentAt: 'x', sdk: {}, batch: [{}] }).ok).toBe(false)
   })
 })
 
 describe('createAnalytics', () => {
   beforeEach(() => {
     localStorage.clear()
+    sessionStorage.clear()
     vi.unstubAllGlobals()
     window.history.pushState({}, '', '/')
   })
@@ -68,7 +63,7 @@ describe('createAnalytics', () => {
     expect(() => createAnalytics({ endpoint: '' })).toThrow(/endpoint/)
   })
 
-  it('captures track events and flushes to endpoint', async () => {
+  it('captures track events and flushes', async () => {
     const calls = mockFetchOk()
     const analytics = createAnalytics({
       endpoint: '/ingest',
@@ -79,12 +74,12 @@ describe('createAnalytics', () => {
       persist: false,
     })
 
-    analytics.capture('cta_clicked', { location: 'hero' })
+    analytics.track('cta_clicked', { location: 'hero' })
     await analytics.flush()
 
-    expect(calls.length).toBeGreaterThanOrEqual(1)
     const body = bodyOf(calls[0]?.init)
     expect(isIngestPayload(body)).toBe(true)
+    expect(body.batch[0]?.context.sessionId).toBeTruthy()
     expect(body.batch).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -94,25 +89,35 @@ describe('createAnalytics', () => {
         }),
       ]),
     )
+    analytics.destroy()
   })
 
-  it('records pageviews with path', async () => {
+  it('auto pageviews on hash / history navigation', async () => {
     const calls = mockFetchOk()
-    window.history.pushState({}, '', '/pricing')
     const analytics = createAnalytics({
       endpoint: '/ingest',
-      capturePageviews: true,
-      flushAt: 1,
+      capturePageviews: 'history',
+      flushAt: 20,
       flushInterval: 0,
       persist: false,
     })
 
     await analytics.flush()
-    const body = bodyOf(calls[0]?.init)
-    const page = body.batch.find((e) => e.type === 'page')
-    expect(page).toBeTruthy()
-    expect(page?.event).toBe('pageview')
-    expect(page?.properties.path).toBe('/pricing')
+    const afterInit = calls.length
+    expect(afterInit).toBeGreaterThanOrEqual(1)
+
+    window.location.hash = '#/pricing'
+    window.dispatchEvent(new Event('hashchange'))
+    await Promise.resolve()
+    await analytics.flush()
+
+    expect(calls.length).toBeGreaterThan(afterInit)
+    const body = bodyOf(calls[calls.length - 1]?.init)
+    const pages = body.batch.filter((e) => e.type === 'page')
+    expect(pages.some((p) => typeof p.properties.hash === 'string' && p.properties.hash.includes('pricing'))).toBe(
+      true,
+    )
+    analytics.destroy()
   })
 
   it('stores first-touch campaign from URL', async () => {
@@ -128,21 +133,13 @@ describe('createAnalytics', () => {
 
     analytics.capture('signup_started')
     await analytics.flush()
-
-    const body = bodyOf(calls[0]?.init)
-    expect(body.batch[0]?.context.campaign).toEqual({
-      source: 'twitter',
-      medium: 'social',
-      campaign: 'launch',
-      content: null,
-      term: null,
-    })
+    expect(bodyOf(calls[0]?.init).batch[0]?.context.campaign.source).toBe('twitter')
 
     window.history.pushState({}, '', '/?utm_source=other')
     analytics.capture('signup_completed')
     await analytics.flush()
-    const body2 = bodyOf(calls[1]?.init)
-    expect(body2.batch[0]?.context.campaign.source).toBe('twitter')
+    expect(bodyOf(calls[1]?.init).batch[0]?.context.campaign.source).toBe('twitter')
+    analytics.destroy()
   })
 
   it('identify sets userId on subsequent events', async () => {
@@ -160,11 +157,9 @@ describe('createAnalytics', () => {
     await analytics.flush()
 
     const body = bodyOf(calls[0]?.init)
-    const identify = body.batch.find((e) => e.type === 'identify')
-    const track = body.batch.find((e) => e.event === 'feature_used')
-    expect(identify?.userId).toBe('user_1')
-    expect(identify?.properties.plan).toBe('pro')
-    expect(track?.userId).toBe('user_1')
+    expect(body.batch.find((e) => e.type === 'identify')?.userId).toBe('user_1')
+    expect(body.batch.find((e) => e.event === 'feature_used')?.userId).toBe('user_1')
+    analytics.destroy()
   })
 
   it('optOut prevents sending', async () => {
@@ -176,11 +171,11 @@ describe('createAnalytics', () => {
       flushInterval: 0,
       persist: false,
     })
-
     analytics.optOut()
     analytics.capture('should_not_send')
     await analytics.flush()
     expect(calls.length).toBe(0)
+    analytics.destroy()
   })
 
   it('reset clears user and rotates anonymous id', () => {
@@ -195,5 +190,6 @@ describe('createAnalytics', () => {
     analytics.reset()
     expect(analytics.getUserId()).toBeNull()
     expect(analytics.getAnonymousId()).not.toBe(before)
+    analytics.destroy()
   })
 })

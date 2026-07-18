@@ -1,6 +1,6 @@
 import type { Hono } from 'hono'
 import { createIngestHandler, type IngestHandlerOptions } from './ingest'
-import type { MemoryStore } from './memory-store'
+import type { AnalyticsReadableStore } from './store'
 
 export interface RegisterIngestOptions extends IngestHandlerOptions {
   /** Default `/ingest` */
@@ -17,10 +17,8 @@ export function registerIngest(app: Hono, options: RegisterIngestOptions): void 
 }
 
 export interface RegisterDemoRoutesOptions {
-  store: MemoryStore
-  /** Default `/events` — list stored events (demo only). */
+  store: AnalyticsReadableStore
   eventsPath?: string
-  /** Default `/stats` — light website stats (demo only). */
   statsPath?: string
   corsOrigin?: string | string[] | true
 }
@@ -41,7 +39,10 @@ function applyDemoCors(
   }
 }
 
-/** Demo read APIs backed by MemoryStore — not for production auth models. */
+/**
+ * Demo read APIs — great for local dashboards, not a production auth model.
+ * Protect or remove these before shipping.
+ */
 export function registerDemoRoutes(app: Hono, options: RegisterDemoRoutesOptions): void {
   const eventsPath = options.eventsPath ?? '/events'
   const statsPath = options.statsPath ?? '/stats'

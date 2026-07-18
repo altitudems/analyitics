@@ -37,17 +37,7 @@ importers:
         specifier: ~5.9.3
         version: 5.9.3
 
-  apps/app:
-    dependencies:
-      '@altitudems/analytics':
-        specifier: workspace:*
-        version: link:../../packages/analytics
-    devDependencies:
-      typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
-
-  apps/marketing:
+  apps/demo:
     dependencies:
       '@altitudems/analytics':
         specifier: workspace:*

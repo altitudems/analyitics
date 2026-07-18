@@ -1,32 +1,32 @@
-# First-party analytics (this package)
+# @altitudems/analytics
 
-Thin browser SDK for product + marketing events. Not PostHog. Not OTel.
-
-## API
+First-party **product + marketing** analytics for the browser.  
+Not PostHog. Not OpenTelemetry. Just events you own.
 
 ```ts
 import { createAnalytics } from '@altitudems/analytics'
 
 const analytics = createAnalytics({
-  endpoint: '/api/analytics/ingest',
-  app: 'marketing', // or 'app'
-  writeKey: 'optional-server-check',
+  endpoint: '/ingest',
+  app: 'marketing',
+  writeKey: 'proj_dev',
 })
 
 analytics.page()
 analytics.capture('cta_clicked', { location: 'hero' })
 analytics.identify(userId, { plan: 'pro' })
-analytics.reset() // logout
 await analytics.flush()
 ```
 
-## Ingest
+## What you get
 
-`POST` JSON `IngestPayload` (`schemaVersion: 1`) with a `batch` of events.
-Store rows; query with SQL for pageviews, campaigns, funnels.
+- `capture` / `track`, `page`, `identify`, `reset`
+- First-touch UTMs + `gclid` / `fbclid`
+- Session ids, anonymous → user stitching
+- SPA history pageviews
+- Batched flush + `sendBeacon` on unload + online retry
+- Opt-out, `destroy()`, debug logging
 
-Suggested table: `id, type, event, timestamp, anonymous_id, user_id, properties jsonb, context jsonb`.
+## Pair with
 
-## Website stats
-
-`page` / auto pageviews + SQL on `path`, `context.campaign`, `anonymousId`.
+`@altitudems/analytics-server` — pluggable `AnalyticsStore` + Hono/fetch ingest.

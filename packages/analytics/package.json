@@ -1,6 +1,6 @@
 {
   "name": "@altitudems/analytics",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "First-party browser analytics: capture, pageviews, campaign attribution, and batched ingest — not a PostHog/OTel replacement",
   "license": "MIT",
   "repository": {
